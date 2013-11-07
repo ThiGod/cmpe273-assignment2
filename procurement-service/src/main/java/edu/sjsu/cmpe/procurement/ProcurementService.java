@@ -64,7 +64,7 @@ public class ProcurementService extends Service<ProcurementServiceConfiguration>
 	environment.addResource(RootResource.class);
 
 	queueName = configuration.getStompQueueName();
-	topicName = configuration.getStompTopicPrefix();
+	topicName = configuration.getStompTopicName();
 	log.debug("Queue name is {}. Topic is {}", queueName, topicName);
 	// TODO: Apollo STOMP Broker URL and login
 	ClientConfig config = new DefaultClientConfig();

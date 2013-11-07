@@ -53,13 +53,10 @@ public class Producer {
 	public void update(String line) {
 		line = line.replaceAll("\"", "");
 		String[] tokens = line.split(":");
-		if (tokens.length != 5) {
-			System.out.println("No Match");
-		}
 		long isbn = Long.parseLong(tokens[0]);
 		String title = tokens[1];
 		String category = tokens[2];
-		String rul = tokens[3] + ":" + tokens[4];
+		String image = tokens[3] + ":" + tokens[4];
 		Book book = bookRepository.getBookByISBN(isbn);	
 		if(book == null) {
 			Book newBook = new Book();
@@ -67,7 +64,7 @@ public class Producer {
 			newBook.setTitle(title);
 			newBook.setCategory(category);	
 			try {
-				newBook.setCoverimage(new URL(rul));
+				newBook.setCoverimage(new URL(image));
 			} catch (MalformedURLException e) {
 			    e.printStackTrace();
 			}		

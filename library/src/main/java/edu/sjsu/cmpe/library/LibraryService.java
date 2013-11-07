@@ -71,7 +71,7 @@ public class LibraryService extends Service<LibraryServiceConfiguration> {
 	/** Root API */
 	environment.addResource(RootResource.class);
 	/** Books APIs */
-	environment.addResource(new BookResource(bookRepository, connection, queueName, libraryName));
+	environment.addResource(new BookResource(bookRepository, connection, topicName, queueName, libraryName));
 	
 	int numThreads = 1;
 	ExecutorService executor = Executors.newFixedThreadPool(numThreads);

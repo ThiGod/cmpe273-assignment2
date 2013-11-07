@@ -16,13 +16,15 @@ public class ProcurementServiceConfiguration extends Configuration {
 
     @NotEmpty
     @JsonProperty
-    private String stompTopicPrefix;
+    private String stompTopicName;
 
+    /*
     @Valid
     @NotNull
     @JsonProperty
     private JerseyClientConfiguration httpClient = new JerseyClientConfiguration();
-
+	*/
+    
     @NotEmpty
     @JsonProperty
     private String apolloUser;
@@ -64,12 +66,12 @@ public class ProcurementServiceConfiguration extends Configuration {
 	this.stompQueueName = stompQueueName;
     }
 
-    public String getStompTopicPrefix() {
-	return stompTopicPrefix;
+    public String getStompTopicName() {
+	return stompTopicName;
     }
 
-    public void setStompTopicPrefix(String stompTopicPrefix) {
-	this.stompTopicPrefix = stompTopicPrefix;
+    public void setStompTopicName(String stompTopicName) {
+	this.stompTopicName = stompTopicName;
     }
 
     /**

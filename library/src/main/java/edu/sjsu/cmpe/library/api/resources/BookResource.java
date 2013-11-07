@@ -22,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.fusesource.stomp.jms.StompJmsDestination;
+import org.fusesource.stomp.jms.message.StompJmsMessage;
 
 import com.yammer.dropwizard.jersey.params.LongParam;
 import com.yammer.metrics.annotation.Timed;
@@ -42,19 +43,19 @@ public class BookResource {
     private final Connection connection;
     private final String queueName;
     private final String libraryName;
+    private final String topicName;
 
     /**
      * BookResource constructor
      * 
      * @param bookRepository
      *            a BookRepository instance
-     * @param libraryName  
-     * @param queueName 
-     * @param connection 
      */
-    public BookResource(BookRepositoryInterface bookRepository, Connection connection, String queueName, String libraryName) {
+    public BookResource(BookRepositoryInterface bookRepository, Connection connection, 
+    		String topicName, String queueName, String libraryName) {
 	this.bookRepository = bookRepository;
 	this.connection = connection;
+	this.topicName = topicName;
 	this.queueName = queueName;
 	this.libraryName = libraryName;
     }
@@ -109,17 +110,18 @@ public class BookResource {
     public Response updateBookStatus(@PathParam("isbn") LongParam isbn,
 	    @DefaultValue("available") @QueryParam("status") Status status) {
 	Book book = bookRepository.getBookByISBN(isbn.get());
-	if(status == Status.lost) {
+	if((book.getStatus() != Status.lost) && (status == Status.lost)) {
+		Session session;
 		try {
-			Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 			Destination destination = new StompJmsDestination(queueName);
 			MessageProducer msgProducer = session.createProducer(destination);
 			msgProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 			System.out.println("Sending ISBN " + book.getIsbn()+ " to " + queueName + "...");
 			String data = libraryName + ":" + book.getIsbn();
-			TextMessage message = session.createTextMessage(data);
-			message.setLongProperty("id", System.currentTimeMillis());
-			msgProducer.send(message);
+			TextMessage msg = session.createTextMessage(data);
+			msg.setLongProperty("id", System.currentTimeMillis());
+			msgProducer.send(msg);
 		} catch (JMSException e) {
 			e.printStackTrace();
 		}
